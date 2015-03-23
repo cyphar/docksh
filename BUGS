@@ -1,0 +1,6 @@
+* Currently, you don't have a tty when you are inside the docksh-generated
+  container. This results in commands such as `su` and `sudo` not working, not
+  to mention stuff like `tmux`. This is because currently `docker exec -it`
+  generates the tty outside the mount namespace, so /proc/self/fd/{0,1,2}
+  refer to ttys that aren't mounted in /dev/pts. This breaks tools that try
+  to resolve the /proc/self/fd/{0,1,2} pseduo-symlinks.
