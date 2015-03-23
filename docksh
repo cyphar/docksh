@@ -20,12 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-USER="${USER:-ctf}"
-SHELL="/bin/bash"
-DOCKSH="${DOCKSH:-$HOME/.docksh}"
+_USER="${DOCKSH_USER:-$USER}"
+_SHELL="${DOCKSH_SHELL:-/bin/bash}"
+_IMAGE="${DOCKSH_IMAGE:-$HOME/.docksh}"
 
 __signals=("INT" "QUIT" "ABRT" "KILL" "ALRM" "TERM")
-__image="$(cat "$DOCKSH")"
+__image="$(cat "$_IMAGE")"
 
 function _trap() {
 	handle="$1"; shift
@@ -40,8 +40,8 @@ function setup() {
 }
 
 function cleanup() {
+	nohup docker rm -f "$__container_id" &>/dev/null
 	trap "-" $__signals
-	docker rm -f "$__container_id" &>/dev/null
 }
 
 __container_id=""
@@ -53,7 +53,7 @@ function _pass_signal() {
 
 function _shell() {
 	__container_id=$(docker run -d "$__image")
-	docker exec -it "$__container_id" sudo -i -u "$USER" "$SHELL"
+	docker exec -it "$__container_id" sudo -i -u "$_USER" "$_SHELL"
 }
 
 setup
